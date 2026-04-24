@@ -429,7 +429,6 @@ func (pp *proportionPlugin) OnSessionOpen(ssn *framework.Session) {
 			// deduct the resources of scheduling gated tasks in a job when calculating inqueued resources
 			// so that it will not block other jobs from being inqueued.
 			attr.inqueue.Add(job.DeductSchGatedResources(minReq))
-			metrics.UpdateQueueInqueue(attr.name, attr.inqueue.MilliCPU, attr.inqueue.Memory, attr.inqueue.ScalarResources)
 			return util.Permit
 		}
 		ssn.RecordPodGroupEvent(job.PodGroup, v1.EventTypeNormal, string(scheduling.PodGroupUnschedulableType), util.FormatResourceNames("queue resource quota insufficient", "insufficient", resourceNames))
