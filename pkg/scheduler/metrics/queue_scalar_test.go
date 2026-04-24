@@ -86,6 +86,9 @@ func TestUpdateQueueInqueue(t *testing.T) {
 	if count := testutil.CollectAndCount(queueInqueueMilliCPU); count != 0 {
 		t.Errorf("expected queueInqueueMilliCPU to be empty after delete, got %d", count)
 	}
+	if count := testutil.CollectAndCount(queueInqueueMemory); count != 0 {
+		t.Errorf("expected queueInqueueMemory to be empty after delete, got %d", count)
+	}
 	if count := testutil.CollectAndCount(queueInqueueScalarResource); count != 0 {
 		t.Errorf("expected queueInqueueScalarResource to be empty after delete, got %d", count)
 	}
