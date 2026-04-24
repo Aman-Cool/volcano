@@ -187,11 +187,13 @@ func (pp *proportionPlugin) OnSessionOpen(ssn *framework.Session) {
 		if attr, ok := pp.queueOpts[queueID]; ok {
 			metrics.UpdateQueueAllocated(attr.name, attr.allocated.MilliCPU, attr.allocated.Memory, attr.allocated.ScalarResources)
 			metrics.UpdateQueueRequest(attr.name, attr.request.MilliCPU, attr.request.Memory, attr.request.ScalarResources)
+			metrics.UpdateQueueInqueue(attr.name, attr.inqueue.MilliCPU, attr.inqueue.Memory, attr.inqueue.ScalarResources)
 			metrics.UpdateQueueWeight(attr.name, attr.weight)
 			continue
 		}
 		metrics.UpdateQueueAllocated(queueInfo.Name, 0, 0, map[v1.ResourceName]float64{})
 		metrics.UpdateQueueRequest(queueInfo.Name, 0, 0, map[v1.ResourceName]float64{})
+		metrics.UpdateQueueInqueue(queueInfo.Name, 0, 0, map[v1.ResourceName]float64{})
 	}
 
 	remaining := pp.totalResource.Clone()
@@ -427,6 +429,7 @@ func (pp *proportionPlugin) OnSessionOpen(ssn *framework.Session) {
 			// deduct the resources of scheduling gated tasks in a job when calculating inqueued resources
 			// so that it will not block other jobs from being inqueued.
 			attr.inqueue.Add(job.DeductSchGatedResources(minReq))
+			metrics.UpdateQueueInqueue(attr.name, attr.inqueue.MilliCPU, attr.inqueue.Memory, attr.inqueue.ScalarResources)
 			return util.Permit
 		}
 		ssn.RecordPodGroupEvent(job.PodGroup, v1.EventTypeNormal, string(scheduling.PodGroupUnschedulableType), util.FormatResourceNames("queue resource quota insufficient", "insufficient", resourceNames))
